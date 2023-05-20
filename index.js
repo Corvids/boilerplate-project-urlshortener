@@ -3,6 +3,7 @@ const express = require('express');
 const cors = require('cors');
 const app = express();
 var bodyParser = require('body-parser');
+const fs = require("fs");
 
 // Basic Configuration
 const port = process.env.PORT || 3000;
@@ -36,15 +37,35 @@ function isValidURL(string) {
 app.post("/api/shorturl", function(req, res) {
   console.log(req.body.url)
   const url = req.body.url
+
+  let urlsFile = fs.readFileSync("url.json");
+  let urls = JSON.parse(urlsFile);
   
   if (!isValidURL(url)) {
     res.json({
       error: "invalid url",
     });
   } else {
+    const short = Math.floor(Math.random() * 100)
+    urls[short] = url;
+
     res.json({
       original_url: url,
-      short_url: 1
+      short_url: short
     });
   }
+});
+
+app.post("/api/shorturl/:shorturl", function(req, res) {
+  const url = req.body.url
+
+  let urlsFile = fs.readFileSync("url.json");
+  let urls = JSON.parse(urlsFile);
+  
+  if (urls[short_url]) {
+    res.redirect(urls[short_url]);
+  } else {
+    res.json({error: "invalid url"});
+  }
+
 });
