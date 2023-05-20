@@ -35,7 +35,6 @@ function isValidURL(string) {
 
 
 app.post("/api/shorturl", function(req, res) {
-  console.log(req.body.url)
   const url = req.body.url
 
   let urlsFile = fs.readFileSync("url.json");
@@ -48,6 +47,7 @@ app.post("/api/shorturl", function(req, res) {
   } else {
     const short = Math.floor(Math.random() * 100)
     urls[short] = url;
+    fs.writeFileSync("url.json", JSON.stringify(urls));
 
     res.json({
       original_url: url,
@@ -56,14 +56,14 @@ app.post("/api/shorturl", function(req, res) {
   }
 });
 
-app.post("/api/shorturl/:shorturl", function(req, res) {
-  const url = req.body.url
+app.get("/api/shorturl/:shorturl", function(req, res) {
+  const url = req.params.shorturl
 
   let urlsFile = fs.readFileSync("url.json");
   let urls = JSON.parse(urlsFile);
   
-  if (urls[short_url]) {
-    res.redirect(urls[short_url]);
+  if (urls[url]) {
+    res.redirect(urls[url]);
   } else {
     res.json({error: "invalid url"});
   }
